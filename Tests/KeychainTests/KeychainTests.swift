@@ -2,14 +2,33 @@ import XCTest
 @testable import Keychain
 
 final class KeychainTests: XCTestCase {
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        XCTAssertEqual(Keychain().text, "Hello, World!")
+    func testAddAndRetrieve() {
+        let password = UUID().uuidString
+        let keychain = Keychain.default
+        
+        do {
+            try keychain.delete(passwordFor: "user", on: "server")
+            try keychain.add(password: password, for: "user", on: "server")
+            let retrieved = try keychain.password(for: "user", on: "server")
+            XCTAssertEqual(password, retrieved)
+        } catch {
+            XCTFail("error: \(error)")
+        }
     }
 
-    static var allTests = [
-        ("testExample", testExample),
-    ]
+    func testUpdate() {
+        let password = UUID().uuidString
+        let keychain = Keychain.default
+        
+        do {
+            
+            try keychain.delete(passwordFor: "user", on: "server")
+            try keychain.add(password: password, for: "user", on: "server")
+            try keychain.update(password: "new password", for: "user", on: "server")
+            let retrieved = try keychain.password(for: "user", on: "server")
+            XCTAssertEqual(retrieved, "new password")
+        } catch {
+            XCTFail("error: \(error)")
+        }
+    }
 }
