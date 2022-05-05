@@ -72,13 +72,18 @@ public struct Keychain {
     guard status == errSecSuccess else { throw KeychainError.unhandledError(status: status) }
   }
 
-  public func update(password: String, for user: String, on server: String) throws {
+  public func update(password: String, for user: String, on server: String, creator: UInt32? = nil) throws {
     let tokenData = password.data(using: .utf8)!
-    let query: NSDictionary = [
+    let query: NSMutableDictionary = [
       kSecClass: kSecClassInternetPassword,
       kSecAttrAccount: user,
       kSecAttrServer: server,
+      kSecMatchLimit: kSecMatchLimitOne
     ]
+
+    if let creator = creator {
+      query[kSecAttrCreator] = creator as CFNumber
+    }
 
     let update: NSDictionary = [
       kSecValueData: tokenData
@@ -87,7 +92,7 @@ public struct Keychain {
     let status = SecItemUpdate(query as CFDictionary, update as CFDictionary)
     switch status {
     case errSecItemNotFound:
-      try add(password: password, for: user, on: server)
+      try add(password: password, for: user, on: server, creator: creator)
 
     case errSecSuccess:
       break

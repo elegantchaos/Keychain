@@ -48,6 +48,22 @@ final class KeychainTests: XCTestCase {
         }
     }
 
+
+    func testUpdateWithCreator() {
+        let password = UUID().uuidString
+        let keychain = Keychain.default
+        
+        do {
+            
+            try keychain.delete(passwordFor: "unittest", on: "server")
+            try keychain.add(password: password, for: "unittest", on: "server", creator: Self.exampleCreator)
+            try keychain.update(password: "new password", for: "unittest", on: "server", creator: Self.exampleCreator)
+            let retrieved = try keychain.password(for: "unittest", on: "server")
+            XCTAssertEqual(retrieved, "new password")
+        } catch {
+            XCTFail("error: \(error)")
+        }
+    }
     func testDelete() {
         let server = UUID().uuidString
         let password = UUID().uuidString
