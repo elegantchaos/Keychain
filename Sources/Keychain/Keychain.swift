@@ -16,17 +16,18 @@ public struct Keychain {
     case unexpectedPasswordData
   }
 
-  public init() {
+  public let kind: CFString
+  
+  public init(kind: CFString = kSecClassInternetPassword) {
+      self.kind = kind
   }
 
-  internal func query(for user: String, on server: String) -> NSDictionary {
-    let query: NSDictionary = [
-      kSecClass: kSecClassInternetPassword,
+  internal func query(for user: String, on server: String) -> NSMutableDictionary {
+    let query: NSMutableDictionary = [
+      kSecClass: kind,
       kSecAttrAccount: user,
       kSecAttrServer: server,
-      kSecMatchLimit: kSecMatchLimitOne,
-      kSecReturnAttributes: true,
-      kSecReturnData: true,
+      kSecMatchLimit: kSecMatchLimitOne
     ]
 
     return query
@@ -34,6 +35,8 @@ public struct Keychain {
 
   public func password(for user: String, on server: String) throws -> String {
     let query = query(for: user, on: server)
+    query[kSecReturnAttributes] = true
+    query[kSecReturnData] = true
 
     var item: CFTypeRef? = nil
     let status = SecItemCopyMatching(query, &item)
@@ -54,8 +57,8 @@ public struct Keychain {
     throws
   {
     let tokenData = password.data(using: .utf8)!
-    var attributes: NSMutableDictionary = [
-      kSecClass: kSecClassInternetPassword,
+    let attributes: NSMutableDictionary = [
+      kSecClass: kind,
       kSecAttrAccount: user,
       kSecAttrServer: server,
       kSecValueData: tokenData,
@@ -105,7 +108,8 @@ public struct Keychain {
   public func delete(allPasswordsCreatedBy appID: UInt32) throws {
     let query: NSDictionary = [
       kSecClass: kSecClassInternetPassword,
-      kSecAttrCreator: appID as CFNumber
+      kSecAttrCreator: appID as CFNumber,
+      kSecMatchLimit: kSecMatchLimitAll
     ]
 
     let status = SecItemDelete(query)

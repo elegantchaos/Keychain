@@ -9,9 +9,9 @@ final class KeychainTests: XCTestCase {
         let keychain = Keychain.default
         
         do {
-            try keychain.delete(passwordFor: "user", on: "server")
-            try keychain.add(password: password, for: "user", on: "server")
-            let retrieved = try keychain.password(for: "user", on: "server")
+            try keychain.delete(passwordFor: "unittest", on: "server")
+            try keychain.add(password: password, for: "unittest", on: "server")
+            let retrieved = try keychain.password(for: "unittest", on: "server")
             XCTAssertEqual(password, retrieved)
         } catch {
             XCTFail("error: \(error)")
@@ -23,9 +23,9 @@ final class KeychainTests: XCTestCase {
         let keychain = Keychain.default
         
         do {
-            try keychain.delete(passwordFor: "user", on: "server")
-            try keychain.add(password: password, for: "user", on: "server", creator: Self.exampleCreator)
-            let retrieved = try keychain.password(for: "user", on: "server")
+            try keychain.delete(passwordFor: "unittest", on: "server")
+            try keychain.add(password: password, for: "unittest", on: "server", creator: Self.exampleCreator)
+            let retrieved = try keychain.password(for: "unittest", on: "server")
             XCTAssertEqual(password, retrieved)
         } catch {
             XCTFail("error: \(error)")
@@ -38,10 +38,10 @@ final class KeychainTests: XCTestCase {
         
         do {
             
-            try keychain.delete(passwordFor: "user", on: "server")
-            try keychain.add(password: password, for: "user", on: "server")
-            try keychain.update(password: "new password", for: "user", on: "server")
-            let retrieved = try keychain.password(for: "user", on: "server")
+            try keychain.delete(passwordFor: "unittest", on: "server")
+            try keychain.add(password: password, for: "unittest", on: "server")
+            try keychain.update(password: "new password", for: "unittest", on: "server")
+            let retrieved = try keychain.password(for: "unittest", on: "server")
             XCTAssertEqual(retrieved, "new password")
         } catch {
             XCTFail("error: \(error)")
@@ -54,11 +54,11 @@ final class KeychainTests: XCTestCase {
         let keychain = Keychain.default
         
         do {
-            try keychain.add(password: password, for: "user", on: server)
-            let retrieved = try keychain.password(for: "user", on: server)
+            try keychain.add(password: password, for: "unittest", on: server)
+            let retrieved = try keychain.password(for: "unittest", on: server)
             XCTAssertEqual(password, retrieved)
-            try keychain.delete(passwordFor: "user", on: server)
-            let missing = try? keychain.password(for: "user", on: server)
+            try keychain.delete(passwordFor: "unittest", on: server)
+            let missing = try? keychain.password(for: "unittest", on: server)
             XCTAssertNil(missing)
         } catch {
             XCTFail("error: \(error)")
@@ -71,12 +71,14 @@ final class KeychainTests: XCTestCase {
         let keychain = Keychain.default
         
         do {
-            try keychain.add(password: password, for: "user", on: server, creator: Self.exampleCreator)
-            let retrieved = try keychain.password(for: "user", on: server)
-            XCTAssertEqual(password, retrieved)
+            try keychain.add(password: password, for: "unittest1", on: server, creator: Self.exampleCreator)
+            try keychain.add(password: password, for: "unittest2", on: server, creator: Self.exampleCreator)
+            XCTAssertEqual(password, try keychain.password(for: "unittest1", on: server))
+            XCTAssertEqual(password, try keychain.password(for: "unittest2", on: server))
+
             try keychain.delete(allPasswordsCreatedBy: Self.exampleCreator)
-            let missing = try? keychain.password(for: "user", on: server)
-            XCTAssertNil(missing)
+            XCTAssertNil(try? keychain.password(for: "unittest1", on: server))
+            XCTAssertNil(try? keychain.password(for: "unittest2", on: server))
         } catch {
             XCTFail("error: \(error)")
         }
