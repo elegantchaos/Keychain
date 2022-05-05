@@ -22,4 +22,6 @@
 
 # Keychain
 
-A description of this package.
+Simple Swift support for reading and writing items to the Keychain.
+
+The library supports storing, updating, retrieving and deleting passwords, keyed by server and user.
