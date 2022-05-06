@@ -74,19 +74,18 @@ public struct Keychain {
 
   public func update(password: String, for user: String, on server: String, creator: UInt32? = nil) throws {
     let tokenData = password.data(using: .utf8)!
-    let query: NSMutableDictionary = [
+      var query: [CFString:Any] = [
       kSecClass: kSecClassInternetPassword,
       kSecAttrAccount: user,
-      kSecAttrServer: server,
-      kSecMatchLimit: kSecMatchLimitOne
+      kSecAttrServer: server
     ]
 
     if let creator = creator {
       query[kSecAttrCreator] = creator as CFNumber
     }
 
-    let update: NSDictionary = [
-      kSecValueData: tokenData
+      let update: [String:Any] = [
+      kSecValueData as String: tokenData
     ]
 
     let status = SecItemUpdate(query as CFDictionary, update as CFDictionary)
