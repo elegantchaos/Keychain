@@ -115,8 +115,7 @@ public struct Keychain {
     public func delete(allPasswordsCreatedBy appID: UInt32) throws {
         let query: NSDictionary = [
             kSecClass: kind,
-            kSecAttrCreator: appID as CFNumber,
-            kSecMatchLimit: kSecMatchLimitAll
+            kSecAttrCreator: appID as CFNumber
         ]
         
         let status = SecItemDelete(query)
