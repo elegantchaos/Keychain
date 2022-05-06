@@ -113,14 +113,27 @@ public struct Keychain {
     /// Entries created by the user in some other way are unlikely to have
     /// the same creator, so should be left untouched.
     public func delete(allPasswordsCreatedBy appID: UInt32) throws {
-        let query: NSDictionary = [
+        let query: NSMutableDictionary = [
             kSecClass: kind,
             kSecAttrCreator: appID as CFNumber
         ]
-        
-        let status = SecItemDelete(query)
-        guard status == errSecSuccess || status == errSecItemNotFound else {
-            throw KeychainError.unhandledError(status: status)
-        }
+
+        #if os(macOS)
+            //
+            query[kSecMatchLimit] = kSecMatchLimitAll
+        #endif
+
+        var item: CFTypeRef? = nil
+        repeat  {
+            var status = SecItemCopyMatching(query, &item)
+            if status == errSecItemNotFound {
+                return
+            }
+            
+            status = SecItemDelete(query)
+            guard status == errSecSuccess || status == errSecItemNotFound else {
+                throw KeychainError.unhandledError(status: status)
+            }
+        } while(true)
     }
 }
