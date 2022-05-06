@@ -32,7 +32,7 @@ public struct Keychain {
         ]
         
         if let creator = creator {
-            spec[creator] = creator as CFNumber
+            spec[kSecAttrCreator] = creator as CFNumber
         }
         
         return spec
