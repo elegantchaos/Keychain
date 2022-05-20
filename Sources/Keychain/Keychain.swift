@@ -99,7 +99,6 @@ public struct Keychain {
     /// If the entry didn't exist, we don't throw any errors.
     public func delete(passwordFor user: String, on server: String, creator: UInt32? = nil) throws {
         let query = itemSpec(for: user, on: server, creator: creator)
-        query[kSecMatchLimit] = kSecMatchLimitOne
         let status = SecItemDelete(query)
         guard status == errSecSuccess || status == errSecItemNotFound else {
             throw KeychainError.unhandledError(status: status)
