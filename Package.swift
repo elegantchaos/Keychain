@@ -8,20 +8,24 @@
 import PackageDescription
 
 let package = Package(
-    name: "Keychain",
-    products: [
-        .library(
-            name: "Keychain",
-            targets: ["Keychain"]),
-    ],
-    dependencies: [
-    ],
-    targets: [
-        .target(
-            name: "Keychain",
-            dependencies: []),
-        .testTarget(
-            name: "KeychainTests",
-            dependencies: ["Keychain"]),
-    ]
+  name: "Keychain",
+  products: [
+    .library(
+      name: "Keychain",
+      targets: ["Keychain"])
+  ],
+  dependencies: [
+    .package(
+      url: "https://github.com/elegantchaos/ActionBuilderPlugin.git",
+      from: "2.0.3"
+    )
+  ],
+  targets: [
+    .target(
+      name: "Keychain",
+      dependencies: []),
+    .testTarget(
+      name: "KeychainTests",
+      dependencies: ["Keychain"]),
+  ]
 )
