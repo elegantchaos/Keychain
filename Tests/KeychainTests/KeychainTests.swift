@@ -5,6 +5,17 @@ import XCTest
 final class KeychainTests: XCTestCase {
     static let exampleCreator : UInt32 = 0x75547374; /* corresponds to 'uTst' */
 
+    private func makeExecutableTestKeychain() -> Keychain {
+        #if os(macOS)
+            // `swift test` runs without the entitlement required by the
+            // data protection backend, so integration-style tests use the
+            // file-based backend while separate assertions cover the default.
+            Keychain(storage: .fileBased)
+        #else
+            .default
+        #endif
+    }
+
     #if os(macOS)
     func testDefaultStorageUsesDataProtection() throws {
         guard #available(macOS 10.15, *) else { return }
@@ -36,7 +47,7 @@ final class KeychainTests: XCTestCase {
 
     func testAddAndRetrieve() throws {
         let password = UUID().uuidString
-        let keychain = Keychain.default
+        let keychain = makeExecutableTestKeychain()
         
         try keychain.delete(passwordFor: "unittest", on: "server")
         try keychain.add(password: password, for: "unittest", on: "server")
@@ -44,9 +55,9 @@ final class KeychainTests: XCTestCase {
         XCTAssertEqual(password, retrieved)
     }
 
-  func testAddUsingUpdate() throws {
+    func testAddUsingUpdate() throws {
         let password = UUID().uuidString
-        let keychain = Keychain.default
+        let keychain = makeExecutableTestKeychain()
 
         try keychain.delete(passwordFor: "unittest", on: "server")
         try keychain.update(password: password, for: "unittest", on: "server")
@@ -56,7 +67,7 @@ final class KeychainTests: XCTestCase {
 
     func testAddAndRetrieveWithCreator() throws {
         let password = UUID().uuidString
-        let keychain = Keychain.default
+        let keychain = makeExecutableTestKeychain()
         
         try keychain.delete(passwordFor: "unittest", on: "server")
         try keychain.add(password: password, for: "unittest", on: "server", creator: Self.exampleCreator)
@@ -64,9 +75,9 @@ final class KeychainTests: XCTestCase {
         XCTAssertEqual(password, retrieved)
     }
 
-func testAddUsingUpdateWithCreator() throws {
+    func testAddUsingUpdateWithCreator() throws {
         let password = UUID().uuidString
-        let keychain = Keychain.default
+        let keychain = makeExecutableTestKeychain()
         
         try keychain.delete(passwordFor: "unittest", on: "server")
         try keychain.update(password: password, for: "unittest", on: "server", creator: Self.exampleCreator)
@@ -76,7 +87,7 @@ func testAddUsingUpdateWithCreator() throws {
 
     func testUpdate() throws {
         let password = UUID().uuidString
-        let keychain = Keychain.default
+        let keychain = makeExecutableTestKeychain()
         
         try keychain.delete(passwordFor: "unittest", on: "server")
         try keychain.add(password: password, for: "unittest", on: "server")
@@ -88,7 +99,7 @@ func testAddUsingUpdateWithCreator() throws {
 
     func testUpdateWithCreator() throws {
         let password = UUID().uuidString
-        let keychain = Keychain.default
+        let keychain = makeExecutableTestKeychain()
         
         try keychain.delete(passwordFor: "unittest", on: "server")
         try keychain.add(password: password, for: "unittest", on: "server", creator: Self.exampleCreator)
@@ -100,7 +111,7 @@ func testAddUsingUpdateWithCreator() throws {
     func testDelete() throws {
         let server = UUID().uuidString
         let password = UUID().uuidString
-        let keychain = Keychain.default
+        let keychain = makeExecutableTestKeychain()
         
         try keychain.add(password: password, for: "unittest", on: server)
         let retrieved = try keychain.password(for: "unittest", on: server)
@@ -113,7 +124,7 @@ func testAddUsingUpdateWithCreator() throws {
     func testDeleteByCreator() throws {
         let server = UUID().uuidString
         let password = UUID().uuidString
-        let keychain = Keychain.default
+        let keychain = makeExecutableTestKeychain()
         
         try keychain.add(password: password, for: "unittest1", on: server, creator: Self.exampleCreator)
         try keychain.add(password: password, for: "unittest2", on: server, creator: Self.exampleCreator)
