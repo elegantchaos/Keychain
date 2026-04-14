@@ -14,13 +14,7 @@ let package = Package(
       name: "Keychain",
       targets: ["Keychain"])
   ],
-  dependencies: [
-    // this is a tool dependency, just used to refresh the CI workflow file
-    .package(
-      url: "https://github.com/elegantchaos/ActionBuilderPlugin.git",
-      from: "2.0.3"
-    )
-  ],
+  dependencies: [],
   targets: [
     .target(
       name: "Keychain",
@@ -30,3 +24,13 @@ let package = Package(
       dependencies: ["Keychain"]),
   ]
 )
+
+#if swift(>=6.2)
+  // this is a tool dependency, just used to refresh the CI workflow file
+  package.dependencies.append(
+    .package(
+      url: "https://github.com/elegantchaos/ActionBuilderPlugin.git",
+      from: "2.0.3"
+    )
+  )
+#endif
