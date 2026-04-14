@@ -15,6 +15,7 @@ let package = Package(
       targets: ["Keychain"])
   ],
   dependencies: [
+    // this is a tool dependency, just used to refresh the CI workflow file
     .package(
       url: "https://github.com/elegantchaos/ActionBuilderPlugin.git",
       from: "2.0.3"
