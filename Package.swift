@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.10
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //  Created by Sam Deane on 06/04/2020.
@@ -8,20 +8,25 @@
 import PackageDescription
 
 let package = Package(
-    name: "Keychain",
-    products: [
-        .library(
-            name: "Keychain",
-            targets: ["Keychain"]),
-    ],
-    dependencies: [
-    ],
-    targets: [
-        .target(
-            name: "Keychain",
-            dependencies: []),
-        .testTarget(
-            name: "KeychainTests",
-            dependencies: ["Keychain"]),
-    ]
+  name: "Keychain",
+  products: [
+    .library(
+      name: "Keychain",
+      targets: ["Keychain"])
+  ],
+  dependencies: [
+    // this is a tool dependency, just used to refresh the CI workflow file
+    .package(
+      url: "https://github.com/elegantchaos/ActionBuilderPlugin.git",
+      from: "2.0.3"
+    )
+  ],
+  targets: [
+    .target(
+      name: "Keychain",
+      dependencies: []),
+    .testTarget(
+      name: "KeychainTests",
+      dependencies: ["Keychain"]),
+  ]
 )

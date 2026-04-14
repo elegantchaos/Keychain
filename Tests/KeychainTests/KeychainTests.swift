@@ -1,8 +1,38 @@
+import Security
 import XCTest
 @testable import Keychain
 
 final class KeychainTests: XCTestCase {
     static let exampleCreator : UInt32 = 0x75547374; /* corresponds to 'uTst' */
+
+    #if os(macOS)
+    func testDefaultStorageUsesDataProtection() throws {
+        guard #available(macOS 10.15, *) else { return }
+        let keychain = Keychain()
+
+        let spec = keychain.itemSpec(for: "unittest", on: "server")
+
+        XCTAssertEqual(spec[kSecUseDataProtectionKeychain] as? Bool, true)
+    }
+
+    func testDataProtectionStorageAddsBackendFlag() throws {
+        guard #available(macOS 10.15, *) else { return }
+        let keychain = Keychain(storage: .dataProtection)
+
+        let spec = keychain.itemSpec(for: "unittest", on: "server")
+
+        XCTAssertEqual(spec[kSecUseDataProtectionKeychain] as? Bool, true)
+    }
+
+    func testFileBasedStorageOmitsBackendFlag() throws {
+        guard #available(macOS 10.15, *) else { return }
+        let keychain = Keychain(storage: .fileBased)
+
+        let spec = keychain.itemSpec(for: "unittest", on: "server")
+
+        XCTAssertNil(spec[kSecUseDataProtectionKeychain])
+    }
+    #endif
 
     func testAddAndRetrieve() throws {
         let password = UUID().uuidString

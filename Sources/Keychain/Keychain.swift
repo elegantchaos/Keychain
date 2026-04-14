@@ -7,22 +7,36 @@ import Foundation
 import Security
 
 public struct Keychain {
-    
+
     public static let `default` = Keychain()
-    
+
     public enum KeychainError: Error {
         case unhandledError(status: OSStatus)
         case unexpectedPasswordData
     }
-    
+
+    /// Selects which macOS keychain backend this value should target.
+    public enum Storage: Sendable {
+        /// Use the historical file-based keychain implementation.
+        case fileBased
+
+        /// Use the data protection keychain on supported macOS systems.
+        case dataProtection
+    }
+
     /// The kind of items this object works with.
     public let kind: CFString
 
+    /// The macOS keychain backend this object should target.
+    public let storage: Storage
+
     /// Creates an object for interacting with a certain type of keychain object.
-    public init(kind: CFString = kSecClassInternetPassword) {
+    /// Defaults to the modern data protection keychain backend on macOS.
+    public init(kind: CFString = kSecClassInternetPassword, storage: Storage = .dataProtection) {
         self.kind = kind
+        self.storage = storage
     }
-    
+
     /// Returns a dictionary describing a keychain item.
     internal func itemSpec(for user: String, on server: String, creator: UInt32? = nil) -> NSMutableDictionary {
         let spec: NSMutableDictionary = [
@@ -34,6 +48,14 @@ public struct Keychain {
         if let creator = creator {
             spec[kSecAttrCreator] = creator as CFNumber
         }
+
+        #if os(macOS)
+            if storage == .dataProtection {
+                if #available(macOS 10.15, *) {
+                    spec[kSecUseDataProtectionKeychain] = true as CFBoolean
+                }
+            }
+        #endif
         
         return spec
     }
