@@ -30,7 +30,7 @@ public struct Keychain {
   /// The macOS keychain backend this object should target.
   public let storage: Storage
 
-  /// Optional access group used when targeting the data protection keychain.
+  /// Optional access group to include in the item specification when provided.
   public let accessGroup: String?
 
   /// Creates an object for interacting with a certain type of keychain object.
