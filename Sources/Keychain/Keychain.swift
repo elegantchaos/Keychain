@@ -52,11 +52,15 @@ public struct Keychain {
   }
 
   /// Returns a dictionary describing a keychain item.
-  internal func itemSpec(for user: String, on server: String, creator: UInt32? = nil) -> NSMutableDictionary {
+  ///
+  /// The `on` value is interpreted according to `kind`:
+  /// - `kSecClassInternetPassword`: stored as `kSecAttrServer`
+  /// - `kSecClassGenericPassword`: stored as `kSecAttrService`
+  internal func itemSpec(for user: String, on location: String, creator: UInt32? = nil) -> NSMutableDictionary {
     let spec: NSMutableDictionary = [
       kSecClass: kind,
       kSecAttrAccount: user,
-      locationKey: server,
+      locationKey: location,
     ]
 
     if let creator = creator {
