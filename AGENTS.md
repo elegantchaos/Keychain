@@ -2,6 +2,7 @@
 
 - This repository is a Swift package for storing, updating, retrieving and deleting Keychain passwords, keyed by server and user.
 - Keep a development journal in `Extras/Journal/`.
+- Keep a decision log in `Extras/Decisions/`.
 
 # Standard Rules
 
